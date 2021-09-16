@@ -1,0 +1,11 @@
+{
+    "name": "day_05",
+    "version": "1.0.0",
+    "description": "This is the Backend THA for Day 5 ",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "ABHIJAY KRISHNA",
+    "license": "ISC"
+  }
