@@ -1,0 +1,63 @@
+connecting redis with express.
+
+-Used middleswares in app.use =>
+session => store, client (to make secret)
+
+to connect postgres, make a pool
+Use pool to execute queries.
+put configs (users,port host etc)
+in a get route
+
+
+I am following along a tutorial on node.js. The tutorial uses Express and Redis. I installed redis and connect-redis (they are referenced in package.json):
+
+npm install redis connect-redis --save
+In my server.js (only meaningful part):
+
+var express = require('express');
+var http = require('http');
+var app = module.exports = express();
+var RedisStore = require('connect-redis')(express);
+
+var redis = require("redis").createClient();
+
+app.configure(function(){
+  app.set('port', process.env.PORT || 3000);
+  app.set('views', __dirname + '/views');
+  console.log('views', __dirname + '/views');
+  app.set('view engine', 'jade'); //jade as template engine
+  app.use(express.favicon());
+  app.use(express.logger('dev'));
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({
+      secret: "kqsdjfmlksdhfhzirzeoibrzecrbzuzefcuercazeafxzeokwdfzeijfxcerig",
+      store: new RedisStore({ host: 'localhost', port: 3000, client: redis })
+  }));
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
+});
+The error message:
+
+Express server listening on port 3000
+[ERROR] Error
+Error: Redis connection to 127.0.0.1:6379 failed - connect ECONNREFUSED
+    at RedisClient.on_error (D:\Programming\Screencasts\peepcode\nodejs\peepcode
+-069-full-stack-nodejs-i-mov\code\roland\HotPie\node_modules\redis\index.js:140:
+24)
+    at Socket.<anonymous> (D:\Programming\Screencasts\peepcode\nodejs\peepcode-0
+69-full-stack-nodejs-i-mov\code\roland\HotPie\node_modules\redis\index.js:74:14)
+
+    at Socket.EventEmitter.emit (events.js:88:17)
+    at Socket._destroy.self.errorEmitted (net.js:329:14)
+    at process.startup.processNextTick.process._tickCallback (node.js:244:9)
+[ERROR] Error
+Error: Redis connection to 127.0.0.1:6379 failed - connect ECONNREFUSED
+    at RedisClient.on_error (D:\Programming\Screencasts\peepcode\nodejs\peepcode
+-069-full-stack-nodejs-i-mov\code\roland\HotPie\node_modules\redis\index.js:140:
+24)
+    at Socket.<anonymous> (D:\Programming\Screencasts\peepcode\nodejs\peepcode-0
+Express starts listening on port 3000, which is what I expect. The redis error message mentions connection on port 6379. This happens if I pass the redisClient to RedisStore, which is what I understood to do to bind redis and RedisStore.
+
+I am developing on Windows
